@@ -1,14 +1,30 @@
-
+import { showMessage } from 'react-native-flash-message'
+import AuthorizationContext from '../../context/AuthorizationContext'
+import { get } from './helpers/ApiRequestsHelper'
 function getAll () {
-  return restaurantsMock
+  return get('/users/myrestaurants')
 }
 
 function getDetail (id) {
-  return restaurantsDetailMock[id]
+  async function fetchRestaurants () { // Addresses problem 1
+    try {
+      const fetchedRestaurants = await getAll()
+      restaurants(fetchedRestaurants)
+    } catch (error) { // Addresses problem 3
+      showMessage({
+        message: `There was an error while retrieving restaurants. ${error} `,
+        type: 'error',
+        style: GlobalStyles.flashStyle,
+        titleStyle: GlobalStyles.flashTextStyle
+      })
+    }
+  }
+ fetchRestaurants()
+  return restaurants[id]
 }
 
 export { getAll, getDetail }
-
+const restaurants = []
 const restaurantsMock = [
   {
     id: 1,
